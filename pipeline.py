@@ -119,7 +119,8 @@ def combine_ips(run_dir):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Process .bz2 traceroutes from online resources, extract their IPs and filter them by country.")
-    parser.add_argument("url_file", help="Text file with list of archive URLs (one per line)")
+    parser.add_argument("--url_file", help="Text file with list of archive URLs (one per line)")
+    parser.add_argument("--url",  help="Atlas Daily Dump Index URL (specific day)")
     parser.add_argument("geoip_db", help="Path to MaxMind GeoIP2 database file")
     args = parser.parse_args()
 
@@ -127,6 +128,17 @@ if __name__ == "__main__":
     run_dir = DATA_DIR / run_id
 
     prepare_dirs(run_dir)
+
+    if not args.url_file and not args.url:
+        print("--url-file OR --url required")
+        exit(2)
+    elif args.url_file and args.url:
+        print("--url-file OR --url required. Please provide only one of them.")
+        exit(2)
+
+    if not args.url_file:
+        args.url_file = "archive_links.txt"
+        run_script("extract-links.py", [str(args.url)])
 
     urls_path = run_dir / "archive_links.txt"
     shutil.copy(args.url_file, urls_path)
