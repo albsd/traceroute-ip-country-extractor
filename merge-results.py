@@ -1,10 +1,13 @@
-import os
+from pathlib import Path
+import os 
+
+CURR_DIR = Path(__file__).resolve().parent
 
 ips = set()
 
-for filename in os.listdir(os.getcwd() + "/filtered_results"):
+for filename in os.listdir(CURR_DIR + "/filtered_results"):
    print(filename)
-   with open(os.path.join(os.getcwd() + "/filtered_results", filename), 'r') as f:
+   with open((CURR_DIR / "/filtered_results" / filename), 'r') as f:
       for line in f:
          ips.add(line)
 
