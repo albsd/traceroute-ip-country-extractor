@@ -29,10 +29,13 @@ with open(file_path, "r") as f:
             break
 
         entry = json.loads(line)
-
+        first_hop = True
         for hop in entry.get('result', []):
             for hop_result in hop.get('result', []):
                 ip = hop_result.get('from')
+                if ip and first_hop:
+                    first_hop = False
+                    continue
                 if ip:
                     ips.add(ip) 
 
