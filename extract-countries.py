@@ -1,6 +1,6 @@
 import geoip2.database
 import argparse
-import os
+from pathlib import Path
 
 def get_country(ip, reader):
     try:
@@ -16,14 +16,20 @@ parser.add_argument("geoip_db", help="Path to MaxMind GeoIP2 database file")
 
 args = parser.parse_args()
 
+ip_file_path = Path(args.ip_file).resolve()  
+geoip_db_path = Path(args.geoip_db).resolve()
+
 if not args.output_file:
-    base_name = os.path.splitext(os.path.basename(args.ip_file))[0]
-    args.output_file = f"{base_name}_countries.txt"
+    base_name = ip_file_path.stem
+    args.output_file = ip_file_path.parent / f"{base_name}_countries.txt"
+
+output_file_path = Path(args.output_file).resolve()  
+output_file_path.parent.mkdir(parents=True, exist_ok=True)
 
 lines_processed = 0
 
-with geoip2.database.Reader(args.geoip_db) as reader:
-    with open(args.ip_file, "r") as ip_file, open(args.output_file, "w") as output_file:
+with geoip2.database.Reader(geoip_db_path) as reader:
+    with ip_file_path.open("r") as ip_file, output_file_path.open("w") as output_file:
         for line in ip_file:
             ip = line.strip()
             country = get_country(ip, reader)
@@ -37,5 +43,5 @@ with geoip2.database.Reader(args.geoip_db) as reader:
             if lines_processed % 5000 == 0:
                 print(f"\rProcessed {lines_processed} lines...", end="", flush=True)
 
-print(f"\rProcessed {lines_processed} lines...", end="", flush=True)
-print(f"\nFinished processing. Results saved to {args.output_file}.")
+print(f"\rProcessed {lines_processed} lines.", end="", flush=True)
+print(f"\nFinished processing. Results saved to {output_file_path}.")

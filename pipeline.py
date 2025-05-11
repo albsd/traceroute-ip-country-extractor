@@ -52,6 +52,10 @@ def download_file(url, dest_path):
     print(f"\nDownload completed: {dest_path}")
 
 def extract_bz2(bz2_path, extract_path):
+    if extract_path.exists():
+        print(f"File {extract_path} already exists. Skipping extraction")
+        return
+    
     print(f"Extracting {bz2_path} to {extract_path}")
     with bz2.BZ2File(bz2_path, 'rb') as f_in:
         with open(extract_path, 'wb') as f_out:
@@ -80,7 +84,7 @@ def process(archive_url, run_dir, geoip_db_path, country="The Netherlands"):
 
         run_script("extract-ips.py", [str(extract_path), "--output_file", str(ip_file)])
         run_script("extract-countries.py", [str(ip_file), "--output_file", str(countries_file), geoip_db_path])
-        run_script("filter_by_country.py", [str(countries_file), country, "--output_file", str(filtered_file)])
+        run_script("filter-by-country.py", [str(countries_file), country, "--output_file", str(filtered_file)])
 
     finally:
         if archive_path.exists():
