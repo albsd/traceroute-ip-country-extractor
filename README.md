@@ -1,6 +1,6 @@
 # IP Country Extraction from Traceroute
 
-Set of scripts allowing the extraction of IPs (hops excluding the first one) from a [traceroute file](https://data-store.ripe.net/datasets/atlas-daily-dumps/).
+Set of scripts allowing the extraction of IPs (hops excluding the first one) from a [traceroute file](https://data-store.ripe.net/datasets/atlas-daily-dumps/). Specifically made for the RIPE Atlas Daily Dumps Index.
 
 ## Requirements:
   - Python
