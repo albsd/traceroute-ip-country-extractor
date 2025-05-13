@@ -7,6 +7,8 @@ Set of scripts allowing the extraction of IPs (hops excluding the first one) fro
   - [geoip2](https://pypi.org/project/geoip2/)
   - [GeoLite2-Country database](https://dev.maxmind.com/geoip/docs/databases/city-and-country/)
 
+Note: The GeoLite2 database used must be **Country**, not City.
+
 ## Simplified version
 
 For all the IPs from a single day only through a link, i.e. [the 11th of May](https://data-store.ripe.net/datasets/atlas-daily-dumps/2025-05-11/):
@@ -26,7 +28,16 @@ python pipeline.py --url-file <url-file-name> <geoip_db>
 
 **The results can be found in data/{run}/results.txt.** You may also inspect the rest of data/{run} for the list of all unique IPs and their respective countries. There is a separate file for each archive included. 
 
-{run} is determined by the time of running the script. 
+`{run}` is normally determined by the time of running the script. 
+
+**Optional arguments**:
+- `-- run-name <name>`: Specify a custom name for the run directory within `/data` (`.mmdb` file). Setting this to the name of an already used run directory may allow re-using extracted archives.
+- `--keep-temp`: Does not remove downloads and extracted archives. **WARNING**: On average, a download is 2GB and an extracted archive is 25GB. **Use with caution**.
+- `--country "<country-name"`: Filter by a specific country, by default "The Netherlands" is used. Note: The country name *must* be enclosed in quotes ("").
+
+## Other notes:
+
+Modifying / renaming the contents of `/data/{run}/country-ips/` specifically may lead to different results as all of the files within the directory are used to compute the final set of IPs.
 
 ## Individual scripts:
 
