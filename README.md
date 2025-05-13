@@ -28,7 +28,7 @@ python pipeline.py --url-file <url-file-name> <geoip_db>
 
 **The results can be found in data/{run}/results.txt.** You may inspect the rest of `data/{run}` for the list of all unique IPs and their respective countries. There is a separate file for each archive included. 
 
-`{run}` is normally determined by the time of running the script. 
+`{run}` is normally determined by the local date/time of when the script was executed. 
 
 **Optional arguments**:
 - `-- run-name <name>`: Specify a custom name for the run directory within `/data` (`.mmdb` file). Setting this to the name of an already used run directory may allow re-using extracted archives.
