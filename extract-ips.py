@@ -26,7 +26,7 @@ NUM_WORKERS = 4
 if args.multithreading:
     NUM_WORKERS = args.multithreading
     
-BATCH_SIZE = 10000
+BATCH_SIZE = 25000
 
 if not args.output_file:
     output_dir = file_path.parent.parent / "ips"  
@@ -37,9 +37,10 @@ if not args.output_file:
     args.output_file = output_dir / f"{base_name}_ips.txt"
 
 ips = set()
-lines_processed = 0
 
 def extract_ips(batch):
+    lines_processed = 0 
+        
     ips = set()
     for line in batch:
         try:
@@ -53,6 +54,11 @@ def extract_ips(batch):
                         continue
                     if ip:
                         ips.add(ip)
+
+            if not args.multithreading:
+                lines_processed += 1
+                if lines_processed % 5000 == 0:
+                    print(f"\rProcessed {lines_processed} lines...", end="", flush=True)
         except json.JSONDecodeError:
             continue
     return ips
