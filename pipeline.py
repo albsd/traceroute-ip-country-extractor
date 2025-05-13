@@ -82,17 +82,21 @@ def process(archive_url, run_dir, geoip_db_path, country="The Netherlands"):
         countries_file = run_dir / "ips_plus_countries" / f"{base_name}_ips_countries.txt"
         filtered_file = run_dir / "country_ips" / f"{base_name}_ips_{country.replace(' ', '_')}.txt"
 
-        run_script("extract-ips.py", [str(extract_path), "--output_file", str(ip_file)])
+        if args.multithreading:
+            run_script("extract-ips.py", [str(extract_path), "--output_file", str(ip_file), "--multithreading", str(args.multithreading)])
+        else:
+            run_script("extract-ips.py", [str(extract_path), "--output_file", str(ip_file)])
         run_script("extract-countries.py", [str(ip_file), "--output_file", str(countries_file), geoip_db_path])
         run_script("filter-by-country.py", [str(countries_file), country, "--output_file", str(filtered_file)])
 
     finally:
-        if archive_path.exists():
-            archive_path.unlink()
-            print(f"Deleted archive: {archive_path}")
-        if extract_path.exists():
-            extract_path.unlink()
-            print(f"Deleted extracted file: {extract_path}")
+        if not args.keep_temp:
+            if archive_path.exists():
+                archive_path.unlink()
+                print(f"Deleted archive: {archive_path}")
+            if extract_path.exists():
+                extract_path.unlink()
+                print(f"Deleted extracted file: {extract_path}")
 
     print(f"Done processing: {archive_name}")
     print("-" * 60)
@@ -122,9 +126,23 @@ if __name__ == "__main__":
     parser.add_argument("--url_file", help="Text file with list of archive URLs (one per line)")
     parser.add_argument("--url",  help="Atlas Daily Dump Index URL (specific day)")
     parser.add_argument("geoip_db", help="Path to MaxMind GeoIP2 database file")
+    parser.add_argument("--run-name", help="Optional name for run")
+    parser.add_argument("--keep-temp", action="store_true", help="Keep downloaded and extracted files")
+    parser.add_argument("--country", default="The Netherlands", help="Country name to filter IPs (default: 'The Netherlands')")
+    parser.add_argument(
+        "--multithreading",
+        nargs="?",
+        const=4,  
+        type=int,
+        help="Multithreading; optionally specify number of workers (default: 4)"
+    )
+
     args = parser.parse_args()
 
-    run_id = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    run_id = args.run_name or datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    # print(run_id)
+    # print(args.country)
+    # print(args.keep_temp)
     run_dir = DATA_DIR / run_id
 
     prepare_dirs(run_dir)
@@ -148,7 +166,7 @@ if __name__ == "__main__":
 
     for url in urls:
         try:
-            process(url, run_dir, args.geoip_db)
+            process(url, run_dir, args.geoip_db, args.country)
         except Exception as e:
             print(f"Error processing {url}: {e}")
             print("-" * 60)
