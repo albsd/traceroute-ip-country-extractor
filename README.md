@@ -26,7 +26,7 @@ python pipeline.py --url-file <url-file-name> <geoip_db>
 - `<geoip-db>`: Path to local GeoIP2 database (`.mmdb` file)
 - `<url-file-name>`: Name of file with links to .bz2 archives
 
-**The results can be found in data/{run}/results.txt.** You may also inspect the rest of data/{run} for the list of all unique IPs and their respective countries. There is a separate file for each archive included. 
+**The results can be found in data/{run}/results.txt.** You may inspect the rest of `data/{run}` for the list of all unique IPs and their respective countries. There is a separate file for each archive included. 
 
 `{run}` is normally determined by the time of running the script. 
 
